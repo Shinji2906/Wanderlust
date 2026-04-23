@@ -1,0 +1,29 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+.workspace/
+
+# Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# ASP.NET Core Backend
+[Bb]in/
+[Oo]bj/
+appsettings.Development.json
+*.userprefs
+*.user
+.vs/
+TestResults/
+*.db
+*.db-shm
+*.db-wal
