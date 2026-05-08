@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Star, Heart } from "lucide-react";
+import { Plus, Star, Heart, Trash2 } from "lucide-react";
 import Layout from "@/components/Layout";
 import heroHome from "@/assets/hero-home.jpg";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,8 +8,8 @@ import { toast } from "sonner";
 import { initialTours } from "@/data/tours";
 
 const API_URL = "http://localhost:5092/api/Tours";
-const destinations = ["All", "Southeast Asia", "Europe", "Mediterranean"];
-const tourTypes = ["All", "Cultural", "Adventure", "Luxury", "Wellness"];
+const destinations = ["Tất cả", "Đông Nam Á", "Châu Âu", "Địa Trung Hải"];
+const tourTypes = ["Tất cả", "Văn hóa", "Phiêu lưu", "Cao cấp", "Sức khỏe"];
 
 export type TourType = {
   id: string | number;
@@ -28,16 +28,17 @@ export type TourType = {
 
 const TourList = () => {
   const [tours, setTours] = useState<TourType[]>([]);
-  const [destFilter, setDestFilter] = useState("All");
-  const [typeFilter, setTypeFilter] = useState("All");
+  const [destFilter, setDestFilter] = useState("Tất cả");
+  const [typeFilter, setTypeFilter] = useState("Tất cả");
   const [showCreate, setShowCreate] = useState(false);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
   const [form, setForm] = useState({
     title: "", description: "", category: "", duration: "", groupSize: "",
-    level: "Easy", departure: "", price: "", content: "",
+    level: "Easy", departure: "", price: "", content: "", imageUrl: ""
   });
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     fetchTours();
@@ -51,10 +52,10 @@ const TourList = () => {
       const data = await res.json();
       
       const mappedTours: TourType[] = data.map((t: any) => ({
-        id: t.tourId,
+        id: t.tourID || t.tourId,
         title: t.tourName,
         description: t.description || "An amazing journey awaits.",
-        image: t.imageUrl || heroHome,
+        image: t.imageUrl || t.imgUrl || heroHome,
         category: "Cultural", // mapping category logic if needed
         duration: t.duration || "5 Days",
         groupSize: t.availableSlots ? `Max ${t.availableSlots} People` : "Group Tour",
@@ -76,11 +77,11 @@ const TourList = () => {
 
   const handleCreate = async () => {
     if (!user) {
-      toast.error("You must be logged in to create a tour.");
+      toast.error("Bạn phải đăng nhập để tạo chuyến đi.");
       return;
     }
     if (!form.title || !form.price) {
-      toast.error("Title and Price are required.");
+      toast.error("Tiêu đề và Giá là bắt buộc.");
       return;
     }
 
@@ -93,7 +94,7 @@ const TourList = () => {
         duration: form.duration || "5 Days",
         departureDate: form.departure ? new Date(form.departure).toISOString() : new Date().toISOString(),
         availableSlots: parseInt(form.groupSize.replace(/\D/g, '')) || 10,
-        imageUrl: heroHome,
+        imageUrl: form.imageUrl || heroHome,
         createdAt: new Date().toISOString()
       };
 
@@ -105,13 +106,55 @@ const TourList = () => {
 
       if (!res.ok) throw new Error("Failed to post tour");
       
-      toast.success("Tour published successfully!");
-      setForm({ title: "", description: "", category: "", duration: "", groupSize: "", level: "Easy", departure: "", price: "", content: "" });
+      toast.success("Đã đăng chuyến đi thành công!");
+      setForm({ title: "", description: "", category: "", duration: "", groupSize: "", level: "Easy", departure: "", price: "", content: "", imageUrl: "" });
       setShowCreate(false);
       fetchTours();
     } catch (error) {
       console.error(error);
-      toast.error("Could not publish tour.");
+      toast.error("Không thể đăng chuyến đi.");
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    try {
+      setUploadingImage(true);
+      const res = await fetch("http://localhost:5092/api/Upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      setForm({ ...form, imageUrl: "http://localhost:5092" + data.url });
+      toast.success("Đã tải ảnh lên!");
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Không thể tải ảnh lên");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleDeleteTour = async (id: string | number) => {
+    if (isNaN(Number(id))) {
+      toast.error("Không thể xóa dữ liệu mẫu");
+      return;
+    }
+    if (!confirm("Bạn có chắc chắn muốn xóa chuyến đi này không?")) return;
+    try {
+      const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      toast.success("Đã xóa chuyến đi");
+      fetchTours();
+    } catch (error) {
+      console.error(error);
+      toast.error("Không thể xóa chuyến đi");
     }
   };
 
@@ -119,12 +162,12 @@ const TourList = () => {
     <Layout>
       {/* Header */}
       <section className="editorial-section pt-12 pb-8">
-        <p className="font-body text-xs uppercase tracking-[0.3em] text-primary font-semibold mb-2">Curated Experiences</p>
-        <h1 className="font-display text-4xl md:text-5xl font-bold">
-          Explore the <em className="font-normal">Horizon</em>
+        <p className="font-body text-xs uppercase tracking-[0.3em] text-primary font-semibold mb-2">Trải nghiệm Tinh hoa</p>
+        <h1 className="font-display text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-dark via-primary to-secondary">
+          Khám phá <em className="font-normal text-foreground">Chân Trời Mới</em>
         </h1>
         <p className="font-body text-muted-foreground mt-2 max-w-lg">
-          Hand-selected journeys that prioritize local depth and refined aesthetics. Your story begins at the edge of the known world.
+          Những hành trình được chọn lọc kỹ lưỡng, đề cao trải nghiệm địa phương sâu sắc và tính thẩm mỹ tinh tế. Câu chuyện của bạn bắt đầu ở nơi tận cùng thế giới.
         </p>
       </section>
 
@@ -133,7 +176,7 @@ const TourList = () => {
           {/* Sidebar Filters */}
           <aside className="lg:w-56 flex-shrink-0 space-y-6">
             <div>
-              <h4 className="label-editorial">Destinations</h4>
+              <h4 className="label-editorial">Điểm đến</h4>
               {destinations.map((d) => (
                 <label key={d} className="flex items-center gap-2 font-body text-sm py-1 cursor-pointer">
                   <input type="radio" name="dest" checked={destFilter === d} onChange={() => setDestFilter(d)} className="accent-primary" />
@@ -142,7 +185,7 @@ const TourList = () => {
               ))}
             </div>
             <div>
-              <h4 className="label-editorial">Tour Type</h4>
+              <h4 className="label-editorial">Loại hình</h4>
               <div className="flex flex-wrap gap-2">
                 {tourTypes.map((t) => (
                   <button
@@ -159,7 +202,7 @@ const TourList = () => {
             </div>
             {user && (
               <button onClick={() => setShowCreate(!showCreate)} className="btn-primary text-sm w-full flex items-center gap-1 justify-center">
-                <Plus size={16} /> Add Tour
+                <Plus size={16} /> Thêm Chuyến Đi
               </button>
             )}
           </aside>
@@ -169,46 +212,52 @@ const TourList = () => {
             {/* Create Form */}
             {showCreate && user && (
               <div className="bg-card border border-border rounded-xl p-6 mb-8 animate-fade-in">
-                <h3 className="font-display text-xl font-bold mb-4">Create a New Tour</h3>
+                <h3 className="font-display text-xl font-bold mb-4">Tạo Chuyến Đi Mới</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div><label className="label-editorial">Title</label><input className="input-editorial" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Tour name" /></div>
-                  <div><label className="label-editorial">Category</label><input className="input-editorial" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="e.g. Cultural, Adventure" /></div>
-                  <div><label className="label-editorial">Duration</label><input className="input-editorial" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} placeholder="e.g. 5 Days / 4 Nights" /></div>
-                  <div><label className="label-editorial">Price ($)</label><input className="input-editorial" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="1249" /></div>
-                  <div><label className="label-editorial">Group Size</label><input className="input-editorial" value={form.groupSize} onChange={(e) => setForm({ ...form, groupSize: e.target.value })} placeholder="Max 8 People" /></div>
-                  <div><label className="label-editorial">Departure Date</label><input className="input-editorial" type="date" value={form.departure} onChange={(e) => setForm({ ...form, departure: e.target.value })} placeholder="City, Country" /></div>
-                  <div className="md:col-span-2"><label className="label-editorial">Description</label><textarea className="input-editorial min-h-[100px]" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe the tour..." /></div>
+                  <div><label className="label-editorial">Tiêu đề</label><input className="input-editorial" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Tên chuyến đi" /></div>
+                  <div><label className="label-editorial">Danh mục</label><input className="input-editorial" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Vd: Văn hóa, Phiêu lưu" /></div>
+                  <div><label className="label-editorial">Thời lượng</label><input className="input-editorial" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} placeholder="Vd: 5 Ngày / 4 Đêm" /></div>
+                  <div><label className="label-editorial">Giá ($)</label><input className="input-editorial" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="1249" /></div>
+                  <div><label className="label-editorial">Quy mô nhóm</label><input className="input-editorial" value={form.groupSize} onChange={(e) => setForm({ ...form, groupSize: e.target.value })} placeholder="Tối đa 8 người" /></div>
+                  <div><label className="label-editorial">Ngày khởi hành</label><input className="input-editorial" type="date" value={form.departure} onChange={(e) => setForm({ ...form, departure: e.target.value })} /></div>
+                  <div className="md:col-span-2">
+                    <label className="label-editorial">Ảnh chuyến đi</label>
+                    <input type="file" accept="image/*" onChange={handleImageUpload} className="input-editorial py-2" />
+                    {uploadingImage && <span className="text-sm text-primary">Đang tải lên...</span>}
+                    {form.imageUrl && <img src={form.imageUrl} alt="Preview" className="mt-2 h-20 rounded object-cover" />}
+                  </div>
+                  <div className="md:col-span-2"><label className="label-editorial">Mô tả</label><textarea className="input-editorial min-h-[100px]" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Mô tả chuyến đi..." /></div>
                 </div>
                 <div className="flex gap-3 mt-4">
-                  <button onClick={handleCreate} className="btn-primary text-sm">Publish Tour</button>
-                  <button onClick={() => setShowCreate(false)} className="btn-outline text-sm">Cancel</button>
+                  <button onClick={handleCreate} className="btn-primary text-sm">Đăng Chuyến Đi</button>
+                  <button onClick={() => setShowCreate(false)} className="btn-outline text-sm">Hủy</button>
                 </div>
               </div>
             )}
 
             {/* Tour Cards */}
             {loading ? (
-              <p className="text-center text-muted-foreground py-10">Loading tours...</p>
+              <p className="text-center text-muted-foreground py-10">Đang tải danh sách...</p>
             ) : (
               <div className="space-y-8">
                 {tours.length > 0 ? tours.map((tour, i) => (
                   <Link to={`/tours/${tour.id}`} key={tour.id} className={`group card-editorial flex flex-col ${i === 0 ? "md:flex-row" : "md:flex-row"}`}>
                     <div className="md:w-2/5 overflow-hidden aspect-[4/3] md:aspect-auto relative">
                       <img src={tour.image} alt={tour.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" width={800} height={600} />
-                      {i === 0 && <span className="absolute top-3 left-3 bg-primary text-primary-foreground font-body text-[10px] uppercase tracking-wider px-2 py-1 rounded">Limited Access</span>}
+                      {i === 0 && <span className="absolute top-3 left-3 bg-primary text-primary-foreground font-body text-[10px] uppercase tracking-wider px-2 py-1 rounded">Số lượng giới hạn</span>}
                       <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors" onClick={(e) => e.preventDefault()}>
                         <Heart size={14} className="text-foreground" />
                       </button>
+                      {user && !isNaN(Number(tour.id)) && (
+                        <button className="absolute top-3 right-14 w-8 h-8 rounded-full bg-red-500/80 flex items-center justify-center hover:bg-red-500 transition-all text-white z-10 opacity-0 group-hover:opacity-100" onClick={(e) => { e.preventDefault(); handleDeleteTour(tour.id); }}>
+                          <Trash2 size={14} />
+                        </button>
+                      )}
                     </div>
                     <div className="md:w-3/5 p-6 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center justify-between">
                           <span className="font-body text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">{tour.category}</span>
-                          {tour.rating > 0 && (
-                            <span className="flex items-center gap-1 font-body text-xs text-foreground">
-                              <Star size={12} className="fill-gold text-gold" /> {tour.rating} ({tour.reviewCount})
-                            </span>
-                          )}
                         </div>
                         <h3 className="font-display text-xl font-bold mt-2 group-hover:text-primary transition-colors">{tour.title}</h3>
                         <p className="font-body text-sm text-muted-foreground mt-2 line-clamp-2">{tour.description}</p>
@@ -220,7 +269,7 @@ const TourList = () => {
                     </div>
                   </Link>
                 )) : (
-                  <p className="text-center text-muted-foreground py-10">No tours found.</p>
+                  <p className="text-center text-muted-foreground py-10">Không tìm thấy chuyến đi nào.</p>
                 )}
               </div>
             )}
@@ -232,11 +281,11 @@ const TourList = () => {
       <section className="bg-teal-dark text-primary-foreground py-16">
         <div className="editorial-section flex flex-col md:flex-row items-center gap-10">
           <div className="flex-1">
-            <h2 className="font-display text-3xl font-bold">Join our circle of <em className="font-normal">sophisticated travelers</em></h2>
-            <p className="font-body opacity-80 mt-2">Receive monthly curated guides to the world's most overlooked destinations.</p>
+            <h2 className="font-display text-3xl font-bold">Tham gia cùng cộng đồng những <em className="font-normal">lữ khách tinh tế</em></h2>
+            <p className="font-body opacity-80 mt-2">Nhận cẩm nang hàng tháng về những điểm đến tuyệt đẹp thường bị lãng quên.</p>
             <div className="flex gap-3 mt-6 max-w-md">
-              <input type="email" placeholder="Email Address" className="flex-1 px-4 py-3 rounded-md bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 font-body text-sm outline-none" />
-              <button className="bg-primary-foreground text-teal-dark px-5 py-3 rounded-md font-body font-medium text-sm">Subscribe</button>
+              <input type="email" placeholder="Địa chỉ Email" className="flex-1 px-4 py-3 rounded-md bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 font-body text-sm outline-none" />
+              <button className="bg-primary-foreground text-teal-dark px-5 py-3 rounded-md font-body font-medium text-sm">Đăng ký</button>
             </div>
           </div>
         </div>

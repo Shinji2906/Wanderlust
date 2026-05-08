@@ -16,6 +16,14 @@ public class BlogsController(WanderlustDbContext dbContext) : ControllerBase
         return Ok(blogs);
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var blog = await dbContext.Blogs.Include(b => b.User).FirstOrDefaultAsync(b => b.BlogID == id);
+        if (blog == null) return NotFound();
+        return Ok(blog);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Blog blog)
     {
@@ -23,5 +31,15 @@ public class BlogsController(WanderlustDbContext dbContext) : ControllerBase
         await dbContext.Blogs.AddAsync(blog);
         await dbContext.SaveChangesAsync();
         return CreatedAtAction(nameof(GetAll), new { id = blog.BlogID }, blog);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var blog = await dbContext.Blogs.FindAsync(id);
+        if (blog == null) return NotFound();
+        dbContext.Blogs.Remove(blog);
+        await dbContext.SaveChangesAsync();
+        return NoContent();
     }
 }

@@ -14,15 +14,15 @@ const Register = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.password) {
-      toast.error("Please fill in all required fields.");
+      toast.error("Vui lòng điền tất cả các trường bắt buộc.");
       return;
     }
     if (form.password !== form.confirm) {
-      toast.error("Passwords do not match.");
+      toast.error("Mật khẩu không khớp.");
       return;
     }
     if (!form.agree) {
-      toast.error("You must agree to the Terms of Service.");
+      toast.error("Bạn phải đồng ý với Điều khoản Dịch vụ.");
       return;
     }
 
@@ -36,14 +36,14 @@ const Register = () => {
 
       const data = await response.json();
       if (response.ok && data.success) {
-        toast.success(data.message || "Registration successful! You can now login.");
+        toast.success(data.message || "Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.");
         navigate("/login");
       } else {
-        toast.error(data.message || "Registration failed.");
+        toast.error(data.message || "Đăng ký thất bại.");
       }
     } catch (error) {
       console.error(error);
-      toast.error("An error occurred during registration.");
+      toast.error("Đã xảy ra lỗi trong quá trình đăng ký.");
     } finally {
       setLoading(false);
     }
@@ -56,19 +56,19 @@ const Register = () => {
           {/* Left: Content + Image */}
           <div className="hidden lg:flex flex-col justify-between p-10 bg-secondary overflow-hidden">
             <div>
-              <p className="font-body text-xs uppercase tracking-[0.3em] text-primary font-semibold mb-3">Begin Your Journey</p>
+              <p className="font-body text-xs uppercase tracking-[0.3em] text-primary font-semibold mb-3">Bắt Đầu Hành Trình</p>
               <h2 className="font-display text-4xl font-bold leading-tight">
-                Discover the<br />world's<br /><em className="font-normal">quietest corners.</em>
+                Khám phá những<br />góc tĩnh lặng nhất<br /><em className="font-normal">của thế giới.</em>
               </h2>
               <p className="font-body text-muted-foreground mt-4 max-w-sm">
-                Join an exclusive community of modern voyagers. Your account unlocks curated itineraries and artisanal travel narratives.
+                Tham gia cộng đồng độc quyền của những lữ khách hiện đại. Tài khoản của bạn sẽ mở khóa những hành trình được tuyển chọn và những câu chuyện du lịch nghệ thuật.
               </p>
             </div>
             <div className="relative rounded-xl overflow-hidden mt-6 flex-1 max-h-[400px]">
               <img src={authRegister} alt="Paradise coast" className="w-full h-full object-cover" loading="lazy" width={800} height={1000} />
               <div className="absolute bottom-4 left-4">
-                <p className="font-body text-[10px] uppercase tracking-widest text-primary-foreground/80">Featured Destination</p>
-                <p className="font-display text-lg italic text-primary-foreground">The Alentejo Coast</p>
+                <p className="font-body text-[10px] uppercase tracking-widest text-primary-foreground/80">Điểm đến Nổi bật</p>
+                <p className="font-display text-lg italic text-primary-foreground">Bờ biển Alentejo</p>
               </div>
             </div>
           </div>
@@ -76,42 +76,42 @@ const Register = () => {
           {/* Right: Form */}
           <div className="flex items-center justify-center p-8 lg:p-16">
             <div className="w-full max-w-md">
-              <h1 className="font-display text-3xl font-bold mb-1">Create Account</h1>
+              <h1 className="font-display text-3xl font-bold mb-1">Tạo Tài Khoản</h1>
               <p className="font-body text-muted-foreground mb-8">
-                Already a member? <Link to="/login" className="text-primary font-medium hover:underline">Login here</Link>
+                Đã là thành viên? <Link to="/login" className="text-primary font-medium hover:underline">Đăng nhập tại đây</Link>
               </p>
 
               <form onSubmit={handleRegister} className="space-y-4">
                 <div>
-                  <label className="label-editorial">Full Name</label>
+                  <label className="label-editorial">Họ và Tên</label>
                   <input className="input-editorial" placeholder="Evelyn Thorne" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
                 </div>
                 <div>
-                  <label className="label-editorial">Email Address</label>
+                  <label className="label-editorial">Địa chỉ Email</label>
                   <input className="input-editorial" type="email" placeholder="voyager@aura.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="label-editorial">Password</label>
+                    <label className="label-editorial">Mật khẩu</label>
                     <input className="input-editorial" type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
                   </div>
                   <div>
-                    <label className="label-editorial">Confirm Password</label>
+                    <label className="label-editorial">Xác nhận Mật khẩu</label>
                     <input className="input-editorial" type="password" placeholder="••••••••" value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} required />
                   </div>
                 </div>
                 <label className="flex items-start gap-2 font-body text-sm text-muted-foreground cursor-pointer">
                   <input type="checkbox" className="accent-primary mt-1" checked={form.agree} onChange={(e) => setForm({ ...form, agree: e.target.checked })} />
-                  <span>I agree to the <span className="text-primary">Terms of Service</span> and <span className="text-primary">Privacy Policy</span> regarding my travel data.</span>
+                  <span>Tôi đồng ý với <span className="text-primary">Điều khoản Dịch vụ</span> và <span className="text-primary">Chính sách Bảo mật</span> liên quan đến dữ liệu chuyến đi của tôi.</span>
                 </label>
                 <button type="submit" disabled={loading} className="btn-primary w-full text-center text-base py-3.5 disabled:opacity-70">
-                  {loading ? "Registering..." : "Register Now"}
+                  {loading ? "Đang đăng ký..." : "Đăng Ký Ngay"}
                 </button>
               </form>
 
               <div className="flex items-center gap-3 my-6">
                 <div className="flex-1 h-px bg-border" />
-                <span className="font-body text-xs uppercase tracking-wider text-muted-foreground">Or join with</span>
+                <span className="font-body text-xs uppercase tracking-wider text-muted-foreground">Hoặc tham gia bằng</span>
                 <div className="flex-1 h-px bg-border" />
               </div>
 

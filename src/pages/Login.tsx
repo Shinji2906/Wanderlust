@@ -17,7 +17,7 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error("Please enter email and password");
+      toast.error("Vui lòng nhập email và mật khẩu");
       return;
     }
 
@@ -31,15 +31,15 @@ const Login = () => {
 
       const data = await response.json();
       if (response.ok && data.success) {
-        toast.success(data.message || "Logged in successfully!");
+        toast.success(data.message || "Đăng nhập thành công!");
         login(data.user);
         navigate("/");
       } else {
-        toast.error(data.message || "Login failed.");
+        toast.error(data.message || "Đăng nhập thất bại.");
       }
     } catch (error) {
       console.error(error);
-      toast.error("An error occurred during login.");
+      toast.error("Đã xảy ra lỗi trong quá trình đăng nhập.");
     } finally {
       setLoading(false);
     }
@@ -52,15 +52,15 @@ const Login = () => {
           {/* Left: Image + Quote */}
           <div className="hidden lg:flex flex-col justify-between p-10 bg-secondary relative overflow-hidden">
             <div>
-              <h2 className="font-display text-3xl italic text-foreground mb-2">Begin your next chapter.</h2>
-              <p className="font-body text-sm text-muted-foreground">"The world is a book and those who do not travel read only one page."</p>
+              <h2 className="font-display text-3xl italic text-foreground mb-2">Bắt đầu chương tiếp theo của bạn.</h2>
+              <p className="font-body text-sm text-muted-foreground">"Thế giới là một cuốn sách và những ai không đi du lịch chỉ mới đọc một trang."</p>
               <p className="font-body text-xs text-muted-foreground mt-1">— St. Augustine</p>
             </div>
             <div className="relative rounded-xl overflow-hidden mt-6 flex-1 max-h-[500px]">
               <img src={authFeatured} alt="Travel" className="w-full h-full object-cover" loading="lazy" width={800} height={1000} />
               <div className="absolute bottom-4 left-4">
-                <p className="font-body text-[10px] uppercase tracking-widest text-primary-foreground/80">Featured Destination</p>
-                <p className="font-display text-lg italic text-primary-foreground">The Grand Canyon Rim</p>
+                <p className="font-body text-[10px] uppercase tracking-widest text-primary-foreground/80">Điểm đến Nổi bật</p>
+                <p className="font-display text-lg italic text-primary-foreground">Vành đai Grand Canyon</p>
               </div>
             </div>
           </div>
@@ -68,32 +68,32 @@ const Login = () => {
           {/* Right: Form */}
           <div className="flex items-center justify-center p-8 lg:p-16">
             <div className="w-full max-w-md">
-              <h1 className="font-display text-3xl font-bold mb-1">Welcome Back</h1>
-              <p className="font-body text-muted-foreground mb-8">Continue your global journey with us.</p>
+              <h1 className="font-display text-3xl font-bold mb-1">Chào Mừng Trở Lại</h1>
+              <p className="font-body text-muted-foreground mb-8">Tiếp tục hành trình toàn cầu cùng chúng tôi.</p>
 
               <form onSubmit={handleLogin} className="space-y-4">
                 <div>
-                  <label className="label-editorial">Email Address</label>
+                  <label className="label-editorial">Địa chỉ Email</label>
                   <input className="input-editorial" type="email" placeholder="traveler@aura.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="font-body text-xs font-semibold uppercase tracking-widest text-muted-foreground">Password</label>
-                    <button type="button" className="font-body text-xs text-primary hover:underline">Forgot password?</button>
+                    <label className="font-body text-xs font-semibold uppercase tracking-widest text-muted-foreground">Mật khẩu</label>
+                    <button type="button" className="font-body text-xs text-primary hover:underline">Quên mật khẩu?</button>
                   </div>
                   <input className="input-editorial" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
                 <label className="flex items-center gap-2 font-body text-sm text-muted-foreground cursor-pointer">
-                  <input type="checkbox" className="accent-primary" /> Keep me signed in
+                  <input type="checkbox" className="accent-primary" /> Duy trì đăng nhập
                 </label>
                 <button type="submit" disabled={loading} className="btn-primary w-full text-center text-base py-3.5 disabled:opacity-70">
-                  {loading ? "Logging in..." : "Login to Expedition"}
+                  {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
                 </button>
               </form>
 
               <div className="flex items-center gap-3 my-6">
                 <div className="flex-1 h-px bg-border" />
-                <span className="font-body text-xs uppercase tracking-wider text-muted-foreground">Or continue with</span>
+                <span className="font-body text-xs uppercase tracking-wider text-muted-foreground">Hoặc tiếp tục với</span>
                 <div className="flex-1 h-px bg-border" />
               </div>
 
@@ -109,7 +109,7 @@ const Login = () => {
               </div>
 
               <p className="font-body text-sm text-center text-muted-foreground mt-6">
-                New to the journey? <Link to="/register" className="text-primary font-medium hover:underline">Register your account</Link>
+                Lần đầu tham gia? <Link to="/register" className="text-primary font-medium hover:underline">Đăng ký tài khoản</Link>
               </p>
             </div>
           </div>

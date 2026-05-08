@@ -12,6 +12,11 @@ import { initialBlogs } from "@/data/blogs";
 const API_URL_BLOGS = "http://localhost:5092/api/Blogs";
 // const API_URL_TOURS = "http://localhost:5092/api/Tours";
 
+const stripHtml = (html: string) => {
+  if (!html) return "";
+  return html.replace(/<[^>]*>?/gm, '');
+};
+
 const Profile = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<"blogs" | "tours">("blogs");
@@ -40,13 +45,13 @@ const Profile = () => {
         const mappedBlogs: BlogPost[] = myBlogsData.map((b: any) => ({
           id: b.blogId,
           title: b.title,
-          excerpt: b.excerpt || b.content?.slice(0, 120) + "..." || "No summary available.",
+          excerpt: b.excerpt || (b.content ? stripHtml(b.content).slice(0, 120) + "..." : "Không có tóm tắt."),
           content: b.content || "",
           image: b.imgUrl || heroProfile,
-          category: "Destinations",
+          category: "Điểm đến",
           author: user.fullName,
           date: b.createdAt ? new Date(b.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : new Date().toLocaleDateString(),
-          readTime: "5 min read",
+          readTime: "Đọc 5 phút",
         }));
         setUserBlogs([...mappedBlogs.reverse(), ...(initialBlogs as any).slice(0, 3)]);
       }
@@ -56,7 +61,7 @@ const Profile = () => {
 
     } catch (error) {
       console.error(error);
-      toast.error("Could not load profile data.");
+      toast.error("Không thể tải dữ liệu hồ sơ.");
     } finally {
       setLoading(false);
     }

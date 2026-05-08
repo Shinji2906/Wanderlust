@@ -6,44 +6,44 @@
 
 @layer base {
   :root {
-    --background: 30 33% 96%;
-    --foreground: 20 10% 15%;
+    --background: 0 0% 100%;
+    --foreground: 220 20% 15%;
 
-    --card: 30 25% 98%;
-    --card-foreground: 20 10% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 15%;
 
-    --popover: 30 25% 98%;
-    --popover-foreground: 20 10% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 15%;
 
-    --primary: 170 50% 30%;
-    --primary-foreground: 30 33% 96%;
+    --primary: 180 85% 40%; /* Vibrant Turquoise */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 30 20% 90%;
-    --secondary-foreground: 20 10% 15%;
+    --secondary: 25 95% 55%; /* Tropical Orange */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 30 15% 92%;
-    --muted-foreground: 20 5% 45%;
+    --muted: 180 40% 96%; /* Soft turquoise tint instead of gray */
+    --muted-foreground: 180 20% 45%;
 
-    --accent: 170 50% 30%;
-    --accent-foreground: 30 33% 96%;
+    --accent: 25 95% 55%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 30 15% 85%;
-    --input: 30 15% 85%;
-    --ring: 170 50% 30%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 180 85% 40%;
 
     --radius: 0.5rem;
 
-    --cream: 30 33% 96%;
-    --cream-dark: 30 20% 90%;
-    --teal: 170 50% 30%;
-    --teal-light: 170 40% 40%;
-    --teal-dark: 170 60% 20%;
-    --warm-gray: 20 5% 45%;
-    --dark: 20 10% 15%;
-    --gold: 38 70% 55%;
+    --cream: 25 50% 96%; /* Warm peach tint */
+    --cream-dark: 25 40% 90%;
+    --teal: 180 85% 40%;
+    --teal-light: 180 85% 50%;
+    --teal-dark: 180 60% 20%;
+    --warm-gray: 215 15% 45%;
+    --dark: 220 30% 10%;
+    --gold: 25 95% 55%;
 
     --font-display: 'Playfair Display', Georgia, serif;
     --font-body: 'DM Sans', system-ui, sans-serif;

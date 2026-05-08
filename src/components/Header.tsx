@@ -9,9 +9,9 @@ const Header = () => {
   const { user, logout } = useAuth();
 
   const navLinks = [
-    { to: "/", label: "Home" },
-    { to: "/blogs", label: "Blog" },
-    { to: "/tours", label: "Tours" },
+    { to: "/", label: "Trang chủ" },
+    { to: "/blogs", label: "Nhật ký" },
+    { to: "/tours", label: "Chuyến đi" },
   ];
 
   const isActive = (path: string) => {
@@ -54,8 +54,8 @@ const Header = () => {
             </div>
           ) : (
             <>
-              <Link to="/login" className="btn-ghost text-sm">Login</Link>
-              <Link to="/register" className="btn-primary text-sm">Register</Link>
+              <Link to="/login" className="btn-ghost text-sm">Đăng nhập</Link>
+              <Link to="/register" className="btn-primary text-sm">Đăng ký</Link>
             </>
           )}
         </div>
@@ -89,8 +89,8 @@ const Header = () => {
               </>
             ) : (
               <div className="flex gap-3">
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="btn-ghost text-sm">Login</Link>
-                <Link to="/register" onClick={() => setMobileOpen(false)} className="btn-primary text-sm">Register</Link>
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="btn-ghost text-sm">Đăng nhập</Link>
+                <Link to="/register" onClick={() => setMobileOpen(false)} className="btn-primary text-sm">Đăng ký</Link>
               </div>
             )}
           </div>
