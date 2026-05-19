@@ -22,6 +22,7 @@ public class AuthController(WanderlustDbContext dbContext) : ControllerBase
         public required string FullName { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
+        public string? Role { get; set; }
     }
 
     [HttpPost("login")]
@@ -66,7 +67,7 @@ public class AuthController(WanderlustDbContext dbContext) : ControllerBase
             FullName = request.FullName,
             Email = request.Email,
             PasswordHash = hashBytes,
-            Role = "User",
+            Role = string.Equals(request.Role, "Admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : "User",
             CreatedAt = DateTime.UtcNow
         };
 

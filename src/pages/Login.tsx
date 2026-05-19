@@ -50,11 +50,11 @@ const Login = () => {
       <section className="min-h-[calc(100vh-4rem)]">
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100vh-4rem)]">
           {/* Left: Image + Quote */}
-          <div className="hidden lg:flex flex-col justify-between p-10 bg-secondary relative overflow-hidden">
+          <div className="hidden lg:flex flex-col justify-between p-10 bg-primary relative overflow-hidden text-primary-foreground">
             <div>
-              <h2 className="font-display text-3xl italic text-foreground mb-2">Bắt đầu chương tiếp theo của bạn.</h2>
-              <p className="font-body text-sm text-muted-foreground">"Thế giới là một cuốn sách và những ai không đi du lịch chỉ mới đọc một trang."</p>
-              <p className="font-body text-xs text-muted-foreground mt-1">— St. Augustine</p>
+              <h2 className="font-display text-3xl italic text-primary-foreground mb-2">Bắt đầu chương tiếp theo của bạn.</h2>
+              <p className="font-body text-sm text-primary-foreground/90">"Thế giới là một cuốn sách và những ai không đi du lịch chỉ mới đọc một trang."</p>
+              <p className="font-body text-xs text-primary-foreground/80 mt-1">— St. Augustine</p>
             </div>
             <div className="relative rounded-xl overflow-hidden mt-6 flex-1 max-h-[500px]">
               <img src={authFeatured} alt="Travel" className="w-full h-full object-cover" loading="lazy" width={800} height={1000} />

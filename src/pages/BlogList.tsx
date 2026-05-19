@@ -240,7 +240,7 @@ const BlogList = () => {
                 <div className={`card-editorial flex flex-col ${i === 0 ? "md:flex-row" : ""}`}>
                   <div className={`overflow-hidden relative ${i === 0 ? "md:w-3/5 aspect-[16/9] md:aspect-auto" : "aspect-[16/9]"}`}>
                     <img src={blog.image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" width={800} height={600} />
-                    {user && !isNaN(Number(blog.id)) && (
+                    {user && !isNaN(Number(blog.id)) && (user.role?.toLowerCase() === 'admin' || blog.author === user.fullName) && (
                       <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-red-500/80 flex items-center justify-center hover:bg-red-500 transition-all text-white z-10 opacity-0 group-hover:opacity-100" onClick={(e) => { e.preventDefault(); handleDeleteBlog(blog.id); }}>
                         <Trash2 size={14} />
                       </button>

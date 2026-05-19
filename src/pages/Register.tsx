@@ -7,7 +7,7 @@ import { toast } from "sonner";
 const API_URL = "http://localhost:5092/api/Auth";
 
 const Register = () => {
-  const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "", agree: false });
+  const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "", agree: false, role: "User" });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -31,7 +31,7 @@ const Register = () => {
       const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName: form.name, email: form.email, password: form.password }),
+        body: JSON.stringify({ fullName: form.name, email: form.email, password: form.password, role: form.role }),
       });
 
       const data = await response.json();
@@ -54,13 +54,13 @@ const Register = () => {
       <section className="min-h-[calc(100vh-4rem)]">
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100vh-4rem)]">
           {/* Left: Content + Image */}
-          <div className="hidden lg:flex flex-col justify-between p-10 bg-secondary overflow-hidden">
+          <div className="hidden lg:flex flex-col justify-between p-10 bg-primary text-primary-foreground overflow-hidden">
             <div>
-              <p className="font-body text-xs uppercase tracking-[0.3em] text-primary font-semibold mb-3">Bắt Đầu Hành Trình</p>
+              <p className="font-body text-xs uppercase tracking-[0.3em] text-secondary font-semibold mb-3">Bắt Đầu Hành Trình</p>
               <h2 className="font-display text-4xl font-bold leading-tight">
-                Khám phá những<br />góc tĩnh lặng nhất<br /><em className="font-normal">của thế giới.</em>
+                Khám phá những<br />góc tĩnh lặng nhất<br /><em className="font-normal text-secondary">của thế giới.</em>
               </h2>
-              <p className="font-body text-muted-foreground mt-4 max-w-sm">
+              <p className="font-body text-primary-foreground/90 mt-4 max-w-sm">
                 Tham gia cộng đồng độc quyền của những lữ khách hiện đại. Tài khoản của bạn sẽ mở khóa những hành trình được tuyển chọn và những câu chuyện du lịch nghệ thuật.
               </p>
             </div>
@@ -99,6 +99,17 @@ const Register = () => {
                     <label className="label-editorial">Xác nhận Mật khẩu</label>
                     <input className="input-editorial" type="password" placeholder="••••••••" value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} required />
                   </div>
+                </div>
+                <div>
+                  <label className="label-editorial">Vai trò đăng ký</label>
+                  <select 
+                    className="input-editorial cursor-pointer" 
+                    value={form.role} 
+                    onChange={(e) => setForm({ ...form, role: e.target.value })}
+                  >
+                    <option value="User">Người dùng (User)</option>
+                    <option value="Admin">Quản lý (Admin)</option>
+                  </select>
                 </div>
                 <label className="flex items-start gap-2 font-body text-sm text-muted-foreground cursor-pointer">
                   <input type="checkbox" className="accent-primary mt-1" checked={form.agree} onChange={(e) => setForm({ ...form, agree: e.target.checked })} />

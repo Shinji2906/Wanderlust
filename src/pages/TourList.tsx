@@ -200,7 +200,7 @@ const TourList = () => {
                 ))}
               </div>
             </div>
-            {user && (
+            {user && user.role?.toLowerCase() === 'admin' && (
               <button onClick={() => setShowCreate(!showCreate)} className="btn-primary text-sm w-full flex items-center gap-1 justify-center">
                 <Plus size={16} /> Thêm Chuyến Đi
               </button>
@@ -210,7 +210,7 @@ const TourList = () => {
           {/* Main Content */}
           <div className="flex-1">
             {/* Create Form */}
-            {showCreate && user && (
+            {showCreate && user && user.role?.toLowerCase() === 'admin' && (
               <div className="bg-card border border-border rounded-xl p-6 mb-8 animate-fade-in">
                 <h3 className="font-display text-xl font-bold mb-4">Tạo Chuyến Đi Mới</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -248,7 +248,7 @@ const TourList = () => {
                       <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors" onClick={(e) => e.preventDefault()}>
                         <Heart size={14} className="text-foreground" />
                       </button>
-                      {user && !isNaN(Number(tour.id)) && (
+                      {user && user.role?.toLowerCase() === 'admin' && !isNaN(Number(tour.id)) && (
                         <button className="absolute top-3 right-14 w-8 h-8 rounded-full bg-red-500/80 flex items-center justify-center hover:bg-red-500 transition-all text-white z-10 opacity-0 group-hover:opacity-100" onClick={(e) => { e.preventDefault(); handleDeleteTour(tour.id); }}>
                           <Trash2 size={14} />
                         </button>
