@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
+import CommentSection from "@/components/CommentSection";
 import { initialBlogs } from "@/data/blogs";
 import heroBlog from "@/assets/hero-blog.jpg";
 
@@ -85,6 +86,10 @@ const BlogDetail = () => {
             ))
           )}
         </div>
+        
+        {id && !isNaN(Number(id)) && (
+          <CommentSection apiEndpoint="Blogs" itemId={Number(id)} />
+        )}
       </article>
     </Layout>
   );

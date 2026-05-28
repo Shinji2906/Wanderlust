@@ -42,4 +42,56 @@ public class ToursController(WanderlustDbContext dbContext) : ControllerBase
         await dbContext.SaveChangesAsync();
         return NoContent();
     }
+
+    [HttpGet("{id}/comments")]
+    public async Task<IActionResult> GetComments(int id)
+    {
+        var comments = await dbContext.TourComments
+            .Include(c => c.User)
+            .Where(c => c.TourID == id)
+            .OrderByDescending(c => c.CommentDate)
+            .Select(c => new
+            {
+                c.CommentID,
+                c.TourID,
+                c.UserIntID,
+                c.CommentText,
+                c.CommentDate,
+                AuthorName = c.User.FullName
+            })
+            .ToListAsync();
+        return Ok(comments);
+    }
+
+    public class CreateCommentDto
+    {
+        public int UserIntID { get; set; }
+        public required string CommentText { get; set; }
+    }
+
+    [HttpPost("{id}/comments")]
+    public async Task<IActionResult> AddComment(int id, [FromBody] CreateCommentDto request)
+    {
+        var comment = new TourComment
+        {
+            TourID = id,
+            UserIntID = request.UserIntID,
+            CommentText = request.CommentText,
+            CommentDate = DateTime.UtcNow
+        };
+        await dbContext.TourComments.AddAsync(comment);
+        await dbContext.SaveChangesAsync();
+
+        var user = await dbContext.Users.FindAsync(request.UserIntID);
+
+        return Ok(new
+        {
+            comment.CommentID,
+            comment.TourID,
+            comment.UserIntID,
+            comment.CommentText,
+            comment.CommentDate,
+            AuthorName = user?.FullName
+        });
+    }
 }

@@ -17,4 +17,5 @@ public class Tour
     public Category? Category { get; set; }
     public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     public ICollection<Blog> Blogs { get; set; } = new List<Blog>();
+    public ICollection<TourComment> TourComments { get; set; } = new List<TourComment>();
 }

@@ -15,4 +15,5 @@ public class User
     public ICollection<Blog> Blogs { get; set; } = new List<Blog>();
     public ICollection<BlogComment> BlogComments { get; set; } = new List<BlogComment>();
     public ICollection<BlogLike> BlogLikes { get; set; } = new List<BlogLike>();
+    public ICollection<TourComment> TourComments { get; set; } = new List<TourComment>();
 }

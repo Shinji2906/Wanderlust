@@ -70,7 +70,7 @@ namespace WanderlustAPI.Migrations
 
                     b.HasIndex("UserIntID");
 
-                    b.ToTable("Blogs", t =>
+                    b.ToTable("Blogs", null, t =>
                         {
                             t.HasCheckConstraint("CK_Blogs_Rate", "Rate BETWEEN 0 AND 5");
                         });
@@ -105,7 +105,7 @@ namespace WanderlustAPI.Migrations
 
                     b.HasIndex("UserIntID");
 
-                    b.ToTable("BlogComments");
+                    b.ToTable("BlogComments", (string)null);
                 });
 
             modelBuilder.Entity("WanderlustAPI.Models.Domain.BlogLike", b =>
@@ -125,7 +125,7 @@ namespace WanderlustAPI.Migrations
 
                     b.HasIndex("UserIntID");
 
-                    b.ToTable("BlogLikes");
+                    b.ToTable("BlogLikes", (string)null);
                 });
 
             modelBuilder.Entity("WanderlustAPI.Models.Domain.Booking", b =>
@@ -165,7 +165,7 @@ namespace WanderlustAPI.Migrations
 
                     b.HasIndex("UserIntID");
 
-                    b.ToTable("Bookings", t =>
+                    b.ToTable("Bookings", null, t =>
                         {
                             t.HasCheckConstraint("CK_Bookings_NumberOfPeople", "NumberOfPeople > 0");
                         });
@@ -192,7 +192,7 @@ namespace WanderlustAPI.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("WanderlustAPI.Models.Domain.Payment", b =>
@@ -226,7 +226,7 @@ namespace WanderlustAPI.Migrations
 
                     b.HasIndex("BookingID");
 
-                    b.ToTable("Payments", t =>
+                    b.ToTable("Payments", null, t =>
                         {
                             t.HasCheckConstraint("CK_Payments_Amount", "Amount >= 0");
                         });
@@ -277,7 +277,7 @@ namespace WanderlustAPI.Migrations
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("Tours", t =>
+                    b.ToTable("Tours", null, t =>
                         {
                             t.HasCheckConstraint("CK_Tours_AvailableSlots", "AvailableSlots >= 0");
 
@@ -329,7 +329,7 @@ namespace WanderlustAPI.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("WanderlustAPI.Models.Domain.Blog", b =>

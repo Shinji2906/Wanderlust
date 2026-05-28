@@ -13,6 +13,7 @@ public class WanderlustDbContext(DbContextOptions<WanderlustDbContext> options) 
     public DbSet<Blog> Blogs => Set<Blog>();
     public DbSet<BlogComment> BlogComments => Set<BlogComment>();
     public DbSet<BlogLike> BlogLikes => Set<BlogLike>();
+    public DbSet<TourComment> TourComments => Set<TourComment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -139,6 +140,22 @@ public class WanderlustDbContext(DbContextOptions<WanderlustDbContext> options) 
 
             entity.HasOne(d => d.User)
                   .WithMany(p => p.BlogLikes)
+                  .HasForeignKey(d => d.UserIntID)
+                  .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        // TourComment Configuration
+        modelBuilder.Entity<TourComment>(entity =>
+        {
+            entity.HasKey(e => e.CommentID);
+            entity.Property(e => e.CommentDate).HasDefaultValueSql("SYSDATETIME()");
+
+            entity.HasOne(d => d.Tour)
+                  .WithMany(p => p.TourComments)
+                  .HasForeignKey(d => d.TourID);
+
+            entity.HasOne(d => d.User)
+                  .WithMany(p => p.TourComments)
                   .HasForeignKey(d => d.UserIntID)
                   .OnDelete(DeleteBehavior.ClientSetNull);
         });

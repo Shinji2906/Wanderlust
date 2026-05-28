@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Calendar, Users, Mountain, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
+import CommentSection from "@/components/CommentSection";
 import { initialTours } from "@/data/tours";
 import heroHome from "@/assets/hero-home.jpg";
 
@@ -131,6 +132,11 @@ const TourDetail = () => {
                 ))}
               </div>
             </div>
+
+            {/* Comments */}
+            {id && !isNaN(Number(id)) && (
+              <CommentSection apiEndpoint="Tours" itemId={Number(id)} />
+            )}
           </div>
 
           {/* Booking Sidebar */}
