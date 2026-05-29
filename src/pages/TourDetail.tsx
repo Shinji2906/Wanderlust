@@ -1,6 +1,8 @@
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Calendar, Users, Mountain, MapPin } from "lucide-react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Calendar, Users, Mountain, MapPin, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import Layout from "@/components/Layout";
 import CommentSection from "@/components/CommentSection";
 import { initialTours } from "@/data/tours";
@@ -8,10 +10,16 @@ import heroHome from "@/assets/hero-home.jpg";
 
 const TourDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  
   const [tour, setTour] = useState<any>(initialTours.find((t) => t.id === id));
   const [loading, setLoading] = useState(!tour);
   const [guests, setGuests] = useState(2);
   const [tier, setTier] = useState("Standard");
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (!tour && id && !isNaN(Number(id))) {
@@ -65,6 +73,44 @@ const TourDetail = () => {
   const baseFare = tour.price * guests;
   const premiumUpgrade = tier === "Premium" ? 350 : 0;
   const total = baseFare + premiumUpgrade;
+
+  const handleBooking = async () => {
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để đặt tour");
+      navigate("/login");
+      return;
+    }
+    if (!bookingDate) {
+      toast.error("Vui lòng chọn ngày khởi hành");
+      return;
+    }
+    
+    setBookingLoading(true);
+    try {
+      const response = await fetch(`http://localhost:5092/api/Bookings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userIntID: user.userIntId,
+          tourID: Number(id),
+          bookingDate: new Date(bookingDate).toISOString(),
+          numberOfPeople: guests,
+          totalPrice: total
+        }),
+      });
+
+      if (response.ok) {
+        setShowModal(true);
+      } else {
+        toast.error("Đặt tour thất bại. Vui lòng thử lại sau.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Có lỗi xảy ra khi kết nối máy chủ.");
+    } finally {
+      setBookingLoading(false);
+    }
+  };
 
   return (
     <Layout>
@@ -148,7 +194,7 @@ const TourDetail = () => {
               <div className="space-y-4 mt-6">
                 <div>
                   <label className="label-editorial">Chọn ngày</label>
-                  <input type="date" className="input-editorial" />
+                  <input type="date" className="input-editorial" value={bookingDate} onChange={(e) => setBookingDate(e.target.value)} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -184,7 +230,9 @@ const TourDetail = () => {
                 </div>
               </div>
 
-              <button className="btn-primary w-full mt-4 text-center">Hoàn tất đặt chỗ</button>
+              <button onClick={handleBooking} disabled={bookingLoading} className="btn-primary w-full mt-4 text-center disabled:opacity-50">
+                {bookingLoading ? "Đang xử lý..." : "Hoàn tất đặt chỗ"}
+              </button>
               <p className="font-body text-[10px] text-center text-muted-foreground mt-3">
                 Bằng cách đặt chỗ, bạn đồng ý với Điều khoản Du lịch và Chính sách Hủy của chúng tôi.
               </p>
@@ -192,6 +240,28 @@ const TourDetail = () => {
           </aside>
         </div>
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="bg-background rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center transform animate-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 size={32} />
+            </div>
+            <h3 className="font-display text-2xl font-bold mb-2">Đặt Tour Thành Công!</h3>
+            <p className="font-body text-muted-foreground mb-8">
+              Cảm ơn bạn đã lựa chọn Wanderlust. Chúng tôi sẽ sớm liên hệ để xác nhận thông tin.
+            </p>
+            <div className="space-y-3">
+              <button onClick={() => navigate("/")} className="btn-primary w-full py-3">
+                Về Trang Chủ
+              </button>
+              <button onClick={() => setShowModal(false)} className="btn-outline w-full py-3">
+                Xem Thêm Tour Khác
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };
