@@ -9,6 +9,7 @@ import BlogList from "./pages/BlogList";
 import BlogDetail from "./pages/BlogDetail";
 import TourList from "./pages/TourList";
 import TourDetail from "./pages/TourDetail";
+import BookingHistory from "./pages/BookingHistory";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/blogs/:id" element={<BlogDetail />} />
             <Route path="/tours" element={<TourList />} />
             <Route path="/tours/:id" element={<TourDetail />} />
+            <Route path="/bookings" element={<BookingHistory />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />

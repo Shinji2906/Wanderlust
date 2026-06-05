@@ -26,11 +26,12 @@ const ChatWidget = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!message.trim() || isLoading) return;
+  const handleSend = async (overrideText?: string) => {
+    const textToSend = overrideText || message;
+    if (!textToSend.trim() || isLoading) return;
 
-    const userText = message.trim();
-    setMessage("");
+    const userText = textToSend.trim();
+    if (!overrideText) setMessage("");
     
     // Add User message
     const newUserMsg: Message = { id: Date.now(), text: userText, isUser: true };
@@ -64,6 +65,12 @@ const ChatWidget = () => {
     }
   };
 
+  const quickReplies = [
+    "Tìm tour đi Đà Lạt",
+    "Tour dưới $500",
+    "Xem Blog mới nhất"
+  ];
+
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
       {/* Chat Window */}
@@ -95,8 +102,21 @@ const ChatWidget = () => {
             <div ref={messagesEndRef} />
           </div>
           
+          {/* Quick Replies */}
+          <div className="px-3 pb-2 pt-1 bg-background flex gap-2 overflow-x-auto no-scrollbar border-t border-border/50">
+            {quickReplies.map((qr, idx) => (
+              <button 
+                key={idx}
+                onClick={() => handleSend(qr)}
+                className="whitespace-nowrap px-3 py-1.5 bg-secondary hover:bg-secondary/80 text-foreground text-xs font-body rounded-full transition-colors border border-border"
+              >
+                {qr}
+              </button>
+            ))}
+          </div>
+
           {/* Input */}
-          <div className="p-3 border-t border-border bg-background flex gap-2 items-center">
+          <div className="p-3 bg-background flex gap-2 items-center">
             <input 
               type="text" 
               className="flex-1 bg-transparent border border-input rounded-full px-4 py-2 font-body text-sm focus:outline-none focus:ring-1 focus:ring-primary" 
@@ -106,7 +126,7 @@ const ChatWidget = () => {
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             />
             <button 
-              onClick={handleSend}
+              onClick={() => handleSend()}
               disabled={isLoading || !message.trim()}
               className="bg-primary text-primary-foreground p-2 rounded-full hover:bg-primary/90 disabled:opacity-50 transition-colors shadow-md"
             >

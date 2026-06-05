@@ -32,6 +32,7 @@ const TourList = () => {
   const [typeFilter, setTypeFilter] = useState("Tất cả");
   const [showCreate, setShowCreate] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [favorites, setFavorites] = useState<string[]>([]);
   const { user } = useAuth();
 
   const [form, setForm] = useState({
@@ -42,7 +43,28 @@ const TourList = () => {
 
   useEffect(() => {
     fetchTours();
+    const savedFavorites = localStorage.getItem("wanderlust_favorites");
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites));
+    }
   }, []);
+
+  const toggleFavorite = (e: React.MouseEvent, id: string | number) => {
+    e.preventDefault();
+    const tourId = String(id);
+    let newFavorites;
+    
+    if (favorites.includes(tourId)) {
+      newFavorites = favorites.filter(fid => fid !== tourId);
+      toast.success("Đã xóa khỏi danh sách yêu thích");
+    } else {
+      newFavorites = [...favorites, tourId];
+      toast.success("Đã lưu vào danh sách yêu thích ❤️");
+    }
+    
+    setFavorites(newFavorites);
+    localStorage.setItem("wanderlust_favorites", JSON.stringify(newFavorites));
+  };
 
   const fetchTours = async () => {
     try {
@@ -176,15 +198,6 @@ const TourList = () => {
           {/* Sidebar Filters */}
           <aside className="lg:w-56 flex-shrink-0 space-y-6">
             <div>
-              <h4 className="label-editorial">Điểm đến</h4>
-              {destinations.map((d) => (
-                <label key={d} className="flex items-center gap-2 font-body text-sm py-1 cursor-pointer">
-                  <input type="radio" name="dest" checked={destFilter === d} onChange={() => setDestFilter(d)} className="accent-primary" />
-                  {d}
-                </label>
-              ))}
-            </div>
-            <div>
               <h4 className="label-editorial">Loại hình</h4>
               <div className="flex flex-wrap gap-2">
                 {tourTypes.map((t) => (
@@ -218,7 +231,7 @@ const TourList = () => {
                   <div><label className="label-editorial">Danh mục</label><input className="input-editorial" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Vd: Văn hóa, Phiêu lưu" /></div>
                   <div><label className="label-editorial">Thời lượng</label><input className="input-editorial" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} placeholder="Vd: 5 Ngày / 4 Đêm" /></div>
                   <div><label className="label-editorial">Giá ($)</label><input className="input-editorial" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="1249" /></div>
-                  <div><label className="label-editorial">Quy mô nhóm</label><input className="input-editorial" value={form.groupSize} onChange={(e) => setForm({ ...form, groupSize: e.target.value })} placeholder="Tối đa 8 người" /></div>
+                  <div><label className="label-editorial">Quy mô nhóm</label><input className="input-editorial" value={form.groupSize} onChange={(e) => setForm({ ...form, groupSize: e.target.value })} placeholder="Tối đa 6 người" /></div>
                   <div><label className="label-editorial">Ngày khởi hành</label><input className="input-editorial" type="date" value={form.departure} onChange={(e) => setForm({ ...form, departure: e.target.value })} /></div>
                   <div className="md:col-span-2">
                     <label className="label-editorial">Ảnh chuyến đi</label>
@@ -245,8 +258,14 @@ const TourList = () => {
                     <div className="md:w-2/5 overflow-hidden aspect-[4/3] md:aspect-auto relative">
                       <img src={tour.image} alt={tour.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" width={800} height={600} />
                       {i === 0 && <span className="absolute top-3 left-3 bg-primary text-primary-foreground font-body text-[10px] uppercase tracking-wider px-2 py-1 rounded">Số lượng giới hạn</span>}
-                      <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors" onClick={(e) => e.preventDefault()}>
-                        <Heart size={14} className="text-foreground" />
+                      <button 
+                        className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors shadow-sm" 
+                        onClick={(e) => toggleFavorite(e, tour.id)}
+                      >
+                        <Heart 
+                          size={14} 
+                          className={`transition-colors ${favorites.includes(String(tour.id)) ? "fill-red-500 text-red-500" : "text-foreground"}`} 
+                        />
                       </button>
                       {user && user.role?.toLowerCase() === 'admin' && !isNaN(Number(tour.id)) && (
                         <button className="absolute top-3 right-14 w-8 h-8 rounded-full bg-red-500/80 flex items-center justify-center hover:bg-red-500 transition-all text-white z-10 opacity-0 group-hover:opacity-100" onClick={(e) => { e.preventDefault(); handleDeleteTour(tour.id); }}>

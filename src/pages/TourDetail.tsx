@@ -126,11 +126,10 @@ const TourDetail = () => {
 
       {/* Meta bar */}
       <div className="bg-card border-b border-border">
-        <div className="editorial-section py-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="editorial-section py-4 grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
             { icon: Calendar, label: "Thời lượng", value: tour.duration },
             { icon: Users, label: "Quy mô", value: tour.groupSize },
-            { icon: Mountain, label: "Cấp độ", value: tour.level },
             { icon: MapPin, label: "Khởi hành", value: tour.departure },
           ].map((item) => (
             <div key={item.label} className="flex items-center gap-2">
@@ -157,24 +156,6 @@ const TourDetail = () => {
               <div className="font-body text-lg leading-relaxed text-foreground/90 space-y-4">
                 {tour.content.split("\n\n").map((p, i) => (
                   <p key={i}>{p}</p>
-                ))}
-              </div>
-            </div>
-
-            {/* Itinerary */}
-            <div>
-              <h2 className="font-display text-2xl font-bold mb-6">Hành Trình Chi Tiết</h2>
-              <div className="space-y-8">
-                {tour.itinerary.map((step, i) => (
-                  <div key={i} className="flex gap-4">
-                    <div className="font-display text-4xl font-bold text-border leading-none">
-                      {String(i + 1).padStart(2, "0")}
-                    </div>
-                    <div className="border-l border-border pl-4">
-                      <h4 className="font-body text-sm font-bold uppercase tracking-wider">{step.title}</h4>
-                      <p className="font-body text-sm text-muted-foreground mt-1 leading-relaxed">{step.description}</p>
-                    </div>
-                  </div>
                 ))}
               </div>
             </div>

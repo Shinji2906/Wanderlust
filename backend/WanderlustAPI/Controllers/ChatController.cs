@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WanderlustAPI.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace WanderlustAPI.Controllers;
 
@@ -21,7 +22,42 @@ public class ChatController(WanderlustDbContext dbContext) : ControllerBase
         var message = request.Message?.ToLower() ?? "";
         string reply = "";
 
-        if (message.Contains("chào") || message.Contains("hello") || message.Contains("hi"))
+        // Bóc tách giá tiền
+        var priceMatch = Regex.Match(message, @"(dưới|rẻ hơn|<|giá dưới)\s*(\d+)");
+        decimal? maxPrice = null;
+        if (priceMatch.Success && decimal.TryParse(priceMatch.Groups[2].Value, out decimal price))
+        {
+            maxPrice = price;
+        }
+
+        // Bóc tách địa điểm
+        string[] locations = { "đà lạt", "phú quốc", "nha trang", "sapa", "hạ long", "hà nội", "đà nẵng" };
+        string targetLocation = locations.FirstOrDefault(loc => message.Contains(loc));
+
+        if (maxPrice.HasValue || targetLocation != null)
+        {
+            var query = dbContext.Tours.AsQueryable();
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(t => t.Price <= maxPrice.Value);
+            }
+            if (targetLocation != null)
+            {
+                query = query.Where(t => t.TourName.ToLower().Contains(targetLocation) || t.Description.ToLower().Contains(targetLocation));
+            }
+
+            var tours = await query.Take(3).ToListAsync();
+            if (tours.Any())
+            {
+                var tourNames = string.Join(", ", tours.Select(t => $"{t.TourName} (${t.Price})"));
+                reply = $"Mình tìm thấy một vài tour cực kỳ phù hợp với yêu cầu của bạn nè: {tourNames}. Bạn thấy sao?";
+            }
+            else
+            {
+                reply = "Rất tiếc, mình không tìm thấy tour nào phù hợp với yêu cầu về vị trí hoặc mức giá của bạn. Bạn thử thay đổi tiêu chí xem sao nhé!";
+            }
+        }
+        else if (message.Contains("chào") || message.Contains("hello") || message.Contains("hi"))
         {
             reply = "Xin chào! Mình là trợ lý AI ảo của Wanderlust. Mình có thể lấy thông tin trực tiếp về các Tour du lịch và Blog thực tế từ hệ thống. Bạn đang quan tâm vấn đề nào?";
         }

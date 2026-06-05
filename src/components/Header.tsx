@@ -12,6 +12,7 @@ const Header = () => {
     { to: "/", label: "Trang chủ" },
     { to: "/blogs", label: "Nhật ký" },
     { to: "/tours", label: "Chuyến đi" },
+    { to: "/bookings", label: "Lịch sử đặt tour" },
   ];
 
   const isActive = (path: string) => {
